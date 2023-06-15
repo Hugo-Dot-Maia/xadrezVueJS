@@ -1,11 +1,12 @@
 <template>
+
   <div class="chessboard">
     <div class="rank">
       <div class="square"></div>
       <div v-for="file in files" :key="file" class="square file-label">{{ file }}</div>
     </div>
-    <div v-for="rank in 8" :key="rank" class="rank">
-      <div class="square rank-label">{{ rank }}</div>
+    <div v-for="rank in 8" :key="9 - rank" class="rank">
+      <div class="square rank-label">{{ 9 - rank }}</div>
       <div v-for="file in 8" :key="file" class="square" :class="{ dark: isSquareDark(rank, file) }" @click="handleSquareClick(rank, file)">
         <!-- Render chess piece if present -->
         <div v-if="hasPiece(rank, file)" class="piece">
@@ -16,22 +17,28 @@
       </div>
     </div>
   </div>
+  <MoveHistoryComponent :moves="moves" />
 </template>
 
 
 <script>
 import {Chess} from 'chess.js';
 import {coordinatesToSquare, pieceImages, SQUARES} from "@/utils/ChessboardUtils";
+import MoveHistoryComponent from '@/components/MoveHistoryComponent';
 
 
 export default {
   name: 'ChessboardComponent',
+  components: {
+    MoveHistoryComponent
+  },
   data() {
     return {
       chess: new Chess(),
-      ranks: [8, 7, 6, 5, 4, 3, 2, 1],
+      ranks: [1, 2, 3, 4, 5, 6, 7, 8],
       files: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
       selectedSquare: null,
+      moves: [],
     };
   },
   methods: {
@@ -77,6 +84,8 @@ export default {
         }
 
         if (validMove) {
+          const newMove = `${move.from}-${move.to}`;
+          this.moves.push(newMove);
           // Move was valid, update chessboard state
           this.updateChessboard();
           // Handle game logic
@@ -161,6 +170,7 @@ export default {
       // No game-ending conditions detected, continue the game
       // Perform any other necessary actions or logic here
     },
+    
   },
 
 }
