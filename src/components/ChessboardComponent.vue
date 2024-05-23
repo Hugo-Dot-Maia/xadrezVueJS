@@ -1,42 +1,53 @@
 <template>
-
   <div class="chessboard">
     <div class="rank">
       <div class="square"></div>
-      <div v-for="file in files" :key="file" class="square file-label">{{ file }}</div>
+      <div v-for="file in files" :key="file" class="square file-label">
+        {{ file }}
+      </div>
     </div>
     <div v-for="rank in 8" :key="9 - rank" class="rank">
       <div class="square rank-label">{{ 9 - rank }}</div>
-      <div v-for="file in 8" :key="file" class="square" :class="{ dark: isSquareDark(rank, file) }" @click="handleSquareClick(rank, file)">
+      <div
+        v-for="file in 8"
+        :key="file"
+        class="square"
+        :class="{ dark: isSquareDark(rank, file) }"
+        @click="handleSquareClick(rank, file)"
+      >
         <!-- Render chess piece if present -->
         <div v-if="hasPiece(rank, file)" class="piece">
-
-          <img :src="getPieceImage(rank, file)" :alt="getPieceSymbol(rank, file)" class="piece-image">
+          <img
+            :src="getPieceImage(rank, file)"
+            :alt="getPieceSymbol(rank, file)"
+            class="piece-image"
+          />
         </div>
-
       </div>
     </div>
   </div>
   <MoveHistoryComponent :moves="moves" />
 </template>
 
-
 <script>
-import {Chess} from 'chess.js';
-import {coordinatesToSquare, pieceImages, SQUARES} from "@/utils/ChessboardUtils";
-import MoveHistoryComponent from '@/components/MoveHistoryComponent';
-
+import { Chess } from "chess.js";
+import {
+  coordinatesToSquare,
+  pieceImages,
+  SQUARES,
+} from "@/utils/ChessboardUtils";
+import MoveHistoryComponent from "@/components/MoveHistoryComponent";
 
 export default {
-  name: 'ChessboardComponent',
+  name: "ChessboardComponent",
   components: {
-    MoveHistoryComponent
+    MoveHistoryComponent,
   },
   data() {
     return {
       chess: new Chess(),
       ranks: [1, 2, 3, 4, 5, 6, 7, 8],
-      files: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
+      files: ["a", "b", "c", "d", "e", "f", "g", "h"],
       selectedSquare: null,
       moves: [],
     };
@@ -51,13 +62,13 @@ export default {
     getPieceSymbol(rank, file) {
       const square = coordinatesToSquare(rank, file);
       const piece = this.chess.get(square);
-      return piece ? piece.type.toUpperCase() : '';
+      return piece ? piece.type.toUpperCase() : "";
     },
     getPieceImage(rank, file) {
       const square = coordinatesToSquare(rank, file);
       const piece = this.chess.get(square);
       if (piece) {
-        const color = piece.color === 'w' ? 'white' : 'black'
+        const color = piece.color === "w" ? "white" : "black";
         const type = pieceImages[piece.type.toLowerCase()];
         return require(`@/assets/images/${color}_${type}.svg`);
       }
@@ -74,12 +85,12 @@ export default {
         const move = {
           from: this.selectedSquare,
           to: square,
-          promotion: 'q', // Default to promoting to a queen
+          promotion: "q", // Default to promoting to a queen
         };
         try {
           this.chess.move(move);
           validMove = true;
-        }catch (e) {
+        } catch (e) {
           validMove = false;
         }
 
@@ -108,7 +119,7 @@ export default {
           const squareElement = document.getElementById(elementId);
 
           if (squareElement) {
-            squareElement.innerHTML = ''; // Clear the content of the square
+            squareElement.innerHTML = ""; // Clear the content of the square
           }
         }
       }
@@ -122,10 +133,12 @@ export default {
           const squareElement = document.getElementById(elementId);
 
           if (squareElement) {
-            const pieceImage = document.createElement('img');
-            pieceImage.src = require(`@/assets/images/${this.getPieceImage(piece)}`);
+            const pieceImage = document.createElement("img");
+            pieceImage.src = require(`@/assets/images/${this.getPieceImage(
+              piece
+            )}`);
             pieceImage.alt = this.getPieceSymbol(piece);
-            pieceImage.classList.add('piece-image');
+            pieceImage.classList.add("piece-image");
 
             squareElement.appendChild(pieceImage);
           }
@@ -136,7 +149,7 @@ export default {
     handleGameLogic() {
       // Check for checkmate
       if (this.chess.isCheckmate()) {
-        const currentPlayer = this.chess.turn() === 'w' ? 'White' : 'Black';
+        const currentPlayer = this.chess.turn() === "w" ? "White" : "Black";
         alert(`${currentPlayer} is in checkmate. Game over!`);
         // Perform any necessary actions after the game ends
         return;
@@ -144,41 +157,37 @@ export default {
 
       // Check for stalemate
       if (this.chess.isStalemate()) {
-        alert('Stalemate. Game over!');
+        alert("Stalemate. Game over!");
         // Perform any necessary actions after the game ends
         return;
       }
 
       // Check for draw by insufficient material
       if (this.chess.isInsufficientMaterial()) {
-        alert('Draw by insufficient material. Game over!');
+        alert("Draw by insufficient material. Game over!");
         // Perform any necessary actions after the game ends
         return;
       }
 
       // Check for draw by threefold repetition
       if (this.chess.isThreefoldRepetition()) {
-        alert('Draw by threefold repetition. Game over!');
+        alert("Draw by threefold repetition. Game over!");
         // Perform any necessary actions after the game ends
         return;
       }
       // Check for draw by stalemate
       if (this.chess.isDraw()) {
-        alert('Stalemate. Game over!');
+        alert("Stalemate. Game over!");
         // Perform any necessary actions after the game ends
       }
       // No game-ending conditions detected, continue the game
       // Perform any other necessary actions or logic here
     },
-    
   },
-
-}
+};
 </script>
 
-
 <style scoped>
-
 .chessboard {
   display: flex;
   flex-direction: column;
@@ -224,4 +233,3 @@ export default {
   color: #000;
 }
 </style>
-
